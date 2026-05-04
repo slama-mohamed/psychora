@@ -15,37 +15,35 @@ type User struct {
 	YearsOfExperience int       `json:"years_of_experience" db:"years_of_experience"`
 	CreatedAt         time.Time `json:"created_at" db:"created_at"`
 	Bio               string    `json:"bio" db:"bio"`
+	IsStudent         bool      `json:"is_student" db:"is_student"`
 }
 
-type Conversation struct {
-	ID        string    `json:"id" db:"id"`
-	UserID    string    `json:"user_id" db:"user_id"`
-	PatientID string    `json:"patient_id" db:"patient_id"`
-	Title     string    `json:"title" db:"title"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-}
-
-type CreateConversationRequest struct {
-	PatientID string `json:"patient_id" binding:"required"`
-	Title     string `json:"title"`
-}
-
-// Request/Response structs
 type SignupRequest struct {
 	FullName          string `json:"fullName" binding:"required"`
 	Email             string `json:"email" binding:"required,email"`
 	Password          string `json:"password" binding:"required,min=6"`
 	Role              string `json:"role"`
+	IsStudent         bool   `json:"isStudent"`
 	Specialty         string `json:"specialty"`
 	IdCard            string `json:"idCard"`
 	Hospital          string `json:"hospital"`
 	Location          string `json:"location"`
 	Phone             string `json:"phone"`
 	YearsOfExperience int    `json:"yearsOfExperience"`
+	University        string `json:"university"`
+	Degree            string `json:"degree"`
+	Year              string `json:"year"`
+}
+
+func (r *SignupRequest) IsStudentAccount() bool {
+	if r.Role == "Student" || r.Role == "student" {
+		return true
+	}
+	return r.IsStudent
 }
 
 type AuthResponse struct {
-	AccessToken string `json:"accessToken"` // must be "accessToken" not "token"
+	AccessToken string `json:"accessToken"`
 	User        User   `json:"user"`
 }
 
@@ -53,8 +51,6 @@ type LoginRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
-
-// Add this to models/models.go
 
 type Patient struct {
 	ID            string    `json:"id" db:"id"`
@@ -82,8 +78,18 @@ type UpdatePatientRequest struct {
 	LastSeen      string `json:"lastSeen"`
 	SessionsCount int    `json:"sessionsCount"`
 }
+
 type MessagePayload struct {
 	Role      string `json:"role"`
 	Content   string `json:"content"`
 	Timestamp string `json:"timestamp"`
+}
+
+type StudentMessage struct {
+	ID        string    `json:"id" db:"id"`
+	UserID    string    `json:"user_id" db:"user_id"`
+	Role      string    `json:"role" db:"role"`
+	Content   string    `json:"content" db:"content"`
+	Timestamp string    `json:"timestamp" db:"timestamp"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
